@@ -1,0 +1,41 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+max_line_length = 100
+
+# Archivos JavaScript / TypeScript / React
+[*.{js,jsx,ts,tsx}]
+indent_style = space
+indent_size = 2
+
+# Estilos
+[*.{css,scss}]
+indent_style = space
+indent_size = 2
+
+# HTML y plantillas
+[*.{html,htm}]
+indent_style = space
+indent_size = 2
+
+# JSON (incluye package.json, tsconfig, etc.)
+[*.json]
+indent_style = space
+indent_size = 2
+
+# YAML (GitHub Actions, configs, etc.)
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# Markdown: no eliminar espacios al final (a veces se usan para saltos de línea)
+[*.md]
+trim_trailing_whitespace = false
+indent_style = space
+indent_size = 2

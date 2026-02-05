@@ -1,0 +1,57 @@
+### Configuración de Variables
+@baseUrl = http://localhost:3000/api/v1
+@contentType = application/json
+
+### 1. Crear un nuevo usuario (POST)
+# @name createUser
+POST {{baseUrl}}/users
+Content-Type: {{contentType}}
+
+{
+    "email": "juanperez2030",
+    "full_name": "Juan Pérez"
+}
+
+### 2. Intento de creación FALLIDO (Email con espacios o Mayúsculas)
+# Esto debería devolver un error 422 debido a tu regex de Zod
+POST {{baseUrl}}/users
+Content-Type: {{contentType}}
+
+{
+    "email": "juanperez2026ASDA",
+    "full_name": "Juan Pérez"
+}
+
+
+### 3.1 Obtener usuarios (Básico - Valores por defecto)
+# @name getAllUsers
+GET {{baseUrl}}/users
+Accept: {{contentType}}
+
+---
+
+### 3.2 Obtener usuarios con Paginación (Página 2, 5 por página)
+# Útil para probar que el cálculo de 'skip' y 'meta' funciona
+GET {{baseUrl}}/users?page=2&limit=2
+Accept: {{contentType}}
+
+---
+
+### 3.3 Búsqueda por término (Search)
+# Prueba tu lógica de filtrado OR (email o full_name)
+GET {{baseUrl}}/users?search=juan
+Accept: {{contentType}}
+
+---
+
+### 3.4 Búsqueda combinada (Filtro + Paginación)
+# El caso más realista para un frontend con filtros
+GET {{baseUrl}}/users?search=admin&page=1&limit=10
+Accept: {{contentType}}
+
+---
+
+### 3.5 Test de Error: Parámetros Inválidos
+# Prueba que tu Zod detecta tipos incorrectos (ej: limit negativo o texto)
+GET {{baseUrl}}/users?limit=-1&page=abc
+Accept: {{contentType}}
