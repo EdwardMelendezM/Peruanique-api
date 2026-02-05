@@ -1,0 +1,49 @@
+### Configuración de Variables
+@baseUrl = http://localhost:3000/api/v1
+@contentType = application/json
+@authToken =
+@questionId =
+@answerId =
+
+### Answers CRUD
+
+### 1. Crear Answer (POST /answers)
+# @name createAnswer
+POST {{baseUrl}}/answers
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+  "questionId": "{{questionId}}",
+  "answer_text": "Lima",
+  "is_correct": true
+}
+
+# @after response
+# > {"answerId":"{{$response.body#/id}}"}
+
+### 2. Obtener Answers por Question (GET /answers/question/{{questionId}})
+# @name getAnswersByQuestion
+GET {{baseUrl}}/answers/question/{{questionId}}
+Accept: {{contentType}}
+
+### 3. Obtener Answer por id (GET /answers/{{answerId}})
+# @name getAnswerById
+GET {{baseUrl}}/answers/{{answerId}}
+Accept: {{contentType}}
+
+### 4. Actualizar Answer (PUT /answers/{{answerId}})
+# @name updateAnswer
+PUT {{baseUrl}}/answers/{{answerId}}
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+  "answer_text": "Ciudad de Lima",
+  "is_correct": true
+}
+
+### 5. Borrar Answer (DELETE /answers/{{answerId}})
+# @name deleteAnswer
+DELETE {{baseUrl}}/answers/{{answerId}}
+Authorization: Bearer {{authToken}}

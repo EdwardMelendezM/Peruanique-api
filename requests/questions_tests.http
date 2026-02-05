@@ -1,0 +1,51 @@
+### Configuración de Variables
+@baseUrl = http://localhost:3000/api/v1
+@contentType = application/json
+@authToken =
+@nodeId =
+@questionId =
+
+### Questions CRUD
+
+### 1. Crear Question (POST /questions)
+# @name createQuestion
+POST {{baseUrl}}/questions
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+  "nodeId": "{{nodeId}}",
+  "question_text": "¿Cuál es la capital del Perú?",
+  "explanation_text": "La capital del Perú es Lima.",
+  "difficulty": "BEGINNER",
+  "question_type": "MULTIPLE_CHOICE"
+}
+
+# @after response
+# > {"questionId":"{{$response.body#/id}}"}
+
+### 2. Obtener preguntas de un nodo (GET /questions/node/:nodeId)
+# @name getQuestionsByNode
+GET {{baseUrl}}/questions/node/{{nodeId}}
+Accept: {{contentType}}
+
+### 3. Obtener Question por id (GET /questions/:id)
+# @name getQuestionById
+GET {{baseUrl}}/questions/{{questionId}}
+Accept: {{contentType}}
+
+### 4. Actualizar Question (PUT /questions/:id)
+# @name updateQuestion
+PUT {{baseUrl}}/questions/{{questionId}}
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+  "question_text": "¿Cuál es la capital de Perú?",
+  "explanation_text": "Lima es la capital"
+}
+
+### 5. Borrar Question (DELETE /questions/:id)
+# @name deleteQuestion
+DELETE {{baseUrl}}/questions/{{questionId}}
+Authorization: Bearer {{authToken}}

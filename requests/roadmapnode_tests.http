@@ -1,0 +1,51 @@
+### Configuración de Variables
+@baseUrl = http://localhost:3000/api/v1
+@contentType = application/json
+@authToken =
+@courseId = 24b830dc-0b34-44ec-b8e5-ff032e18885d
+@nodeId =
+
+### RoadmapNode CRUD
+
+### 1. Crear RoadmapNode (POST /roadmap)
+# @name createRoadmapNode
+POST {{baseUrl}}/roadmap
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+  "courseId": "{{courseId}}",
+  "title": "Introducción a Álgebra",
+  "order_index": 1,
+  "difficulty_level": "BEGINNER",
+  "is_boss_level": false
+}
+
+# @after response
+# > {"nodeId":"{{$response.body#/id}}"}
+
+### 2. Obtener RoadmapNodes por course (GET /roadmap/{{courseId}})
+# @name getRoadmapByCourse
+GET {{baseUrl}}/roadmap/{{courseId}}
+Accept: {{contentType}}
+
+### 3. Obtener RoadmapNode por id (GET /roadmap/node/{{nodeId}})
+# @name getRoadmapNodeById
+GET {{baseUrl}}/roadmap/node/{{nodeId}}
+Accept: {{contentType}}
+
+### 4. Actualizar RoadmapNode (PUT /roadmap/node/{{nodeId}})
+# @name updateRoadmapNode
+PUT {{baseUrl}}/roadmap/node/{{nodeId}}
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+  "title": "Álgebra Básica",
+  "order_index": 2
+}
+
+### 5. Borrar RoadmapNode (DELETE /roadmap/node/{{nodeId}})
+# @name deleteRoadmapNode
+DELETE {{baseUrl}}/roadmap/node/{{nodeId}}
+Authorization: Bearer {{authToken}}

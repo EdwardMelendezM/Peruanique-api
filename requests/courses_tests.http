@@ -1,0 +1,46 @@
+### Configuración de Variables
+@baseUrl = http://localhost:3000/api/v1
+@contentType = application/json
+@authToken =
+@courseId =
+
+### Courses CRUD
+
+### 1. Crear Course (POST /courses)
+# @name createCourse
+POST {{baseUrl}}/courses
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "Ciencias",
+  "color_theme": "#FF0000",
+  "icon_url": "https://example.com/icon.png"
+}
+
+### 2. Obtener lista de Courses (GET /courses)
+# @name getCourses
+GET {{baseUrl}}/courses
+Accept: {{contentType}}
+
+### 3. Obtener Course por id (GET /courses/:id)
+# Reemplaza :id por el id retornado en la creación o lista
+# @name getCourseById
+GET {{baseUrl}}/courses/{{courseId}}
+Accept: {{contentType}}
+
+### 4. Actualizar Course (PUT /courses/:id)
+# @name updateCourse
+PUT {{baseUrl}}/courses/{{courseId}}
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "Ciencias Exactas",
+  "color_theme": "#00FF00"
+}
+
+### 5. Borrar Course (DELETE /courses/:id)
+# @name deleteCourse
+DELETE {{baseUrl}}/courses/{{courseId}}
+Authorization: Bearer {{authToken}}

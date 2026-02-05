@@ -1,0 +1,199 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  PROFESSIONAL
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  DRAG_AND_DROP
+}
+
+enum ProgressStatus {
+  LOCKED
+  IN_PROGRESS
+  COMPLETED
+}
+
+// --- Modelos ---
+
+model User {
+  id                 String         @id @default(uuid()) @db.Uuid
+  email              String         @unique
+  emailVerified      Boolean        @default(false)
+  password           String?        // Opcional si solo usas OAuth
+  full_name          String
+  image              String?        // Para la foto de perfil de Google/FB
+
+  // Campos de Gamificación FIJA
+  birthday           DateTime?
+  daily_goal_minutes Int            @default(15)
+  total_xp           Int            @default(0)
+  streak_days        Int            @default(0)
+  current_energy     Int            @default(5)
+
+  // Relaciones de Auth
+  sessions           Session[]
+  accounts           Account[]
+
+  // Relaciones de App
+  profile            UserProfile?
+  progress           UserProgress[]
+  schedules          DailySchedule[]
+
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  @@index([total_xp(sort: Desc)])
+}
+
+model Session {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id                    String    @id @default(uuid()) @db.Uuid
+  userId                String    @db.Uuid
+  accountId             String
+  providerId            String
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?   @db.Text
+  password              String?
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+model Verification {
+  id         String    @id @default(uuid()) @db.Uuid
+  identifier String
+  value      String
+  expiresAt  DateTime
+
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+}
+
+model UserProfile {
+  id                String   @id @default(uuid()) @db.Uuid
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String   @unique @db.Uuid
+  target_university String   // Ej: UNMSM, UNI
+  target_major      String   // Carrera
+  current_level_tag String   @default("novato")
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Course {
+  id          String         @id @default(uuid()) @db.Uuid
+  name        String         // Ej: Ciencias, Letras
+  color_theme String?
+  icon_url    String?
+  
+  nodes       RoadmapNode[]
+  
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model RoadmapNode {
+  id               String         @id @default(uuid()) @db.Uuid
+  course           Course         @relation(fields: [courseId], references: [id])
+  courseId         String         @db.Uuid
+  title            String
+  order_index      Int            // Para manejar la secuencia tipo Duolingo
+  difficulty_level Difficulty     @default(BEGINNER)
+  is_boss_level    Boolean        @default(false)
+  
+  questions        Question[]
+  user_progress    UserProgress[]
+  
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@unique([courseId, order_index]) // Evita duplicidad de orden en un curso
+}
+
+model Question {
+  id               String       @id @default(uuid()) @db.Uuid
+  node             RoadmapNode  @relation(fields: [nodeId], references: [id])
+  nodeId           String       @db.Uuid
+  question_text    String       @db.Text
+  explanation_text String?      @db.Text // El "por qué" profesional
+  difficulty       Difficulty   @default(BEGINNER)
+  question_type    QuestionType @default(MULTIPLE_CHOICE)
+  
+  answers          Answer[]
+  
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+}
+
+model Answer {
+  id          String   @id @default(uuid()) @db.Uuid
+  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId  String   @db.Uuid
+  answer_text String   @db.Text
+  is_correct  Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model UserProgress {
+  id             String         @id @default(uuid()) @db.Uuid
+  user           User           @relation(fields: [userId], references: [id])
+  userId         String         @db.Uuid
+  node           RoadmapNode    @relation(fields: [nodeId], references: [id])
+  nodeId         String         @db.Uuid
+  status         ProgressStatus @default(LOCKED)
+  score_obtained Int            @default(0)
+  
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@unique([userId, nodeId]) // Un registro de progreso por usuario/nodo
+}
+
+model DailySchedule {
+  id             String   @id @default(uuid()) @db.Uuid
+  user           User     @relation(fields: [userId], references: [id])
+  userId         String   @db.Uuid
+  preferred_hour DateTime @db.Time
+  days_of_week   Int[]    // Array de 0-6 (Domingo a Sábado)
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
