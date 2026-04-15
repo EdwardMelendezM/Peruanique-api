@@ -111,7 +111,7 @@ model UserProfile {
   target_university String   // Ej: UNMSM, UNI
   target_major      String   // Carrera
   current_level_tag String   @default("novato")
-  
+
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
@@ -121,9 +121,9 @@ model Course {
   name        String         // Ej: Ciencias, Letras
   color_theme String?
   icon_url    String?
-  
+
   nodes       RoadmapNode[]
-  
+
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 }
@@ -136,10 +136,10 @@ model RoadmapNode {
   order_index      Int            // Para manejar la secuencia tipo Duolingo
   difficulty_level Difficulty     @default(BEGINNER)
   is_boss_level    Boolean        @default(false)
-  
+
   questions        Question[]
   user_progress    UserProgress[]
-  
+
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
 
@@ -154,9 +154,9 @@ model Question {
   explanation_text String?      @db.Text // El "por qué" profesional
   difficulty       Difficulty   @default(BEGINNER)
   question_type    QuestionType @default(MULTIPLE_CHOICE)
-  
+
   answers          Answer[]
-  
+
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
 }
@@ -167,7 +167,7 @@ model Answer {
   questionId  String   @db.Uuid
   answer_text String   @db.Text
   is_correct  Boolean  @default(false)
-  
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -180,7 +180,7 @@ model UserProgress {
   nodeId         String         @db.Uuid
   status         ProgressStatus @default(LOCKED)
   score_obtained Int            @default(0)
-  
+
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
@@ -193,7 +193,7 @@ model DailySchedule {
   userId         String   @db.Uuid
   preferred_hour DateTime @db.Time
   days_of_week   Int[]    // Array de 0-6 (Domingo a Sábado)
-  
+
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
