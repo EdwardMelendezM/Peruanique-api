@@ -1,86 +1,90 @@
-opilot Instructions
+Copilot Instructions
 
 ## Project Overview
-The SODU () platform is a high-performance digital ecosystem for a university debate society. It uses a **Feature-Based Architecture** to ensure scalability and maintainability.
+The FIJA platform is a high-performance digital ecosystem designed for university admission preparation. It uses a Feature-Based Architecture to ensure scalability and maintainability. This repository includes not only backend and data contracts but also clear guidance for organizing UI/UX artifacts: where to place atomic UI primitives, feature-scoped components and screens, design tokens, and lightweight UX specs so that frontend and design remain synchronized with business logic.
+
+## Main context (Guiding Document)
+The primary source of truth for architectural decisions and priorities is the "FIJA Backend: Step-by-Step Guide (Software Engineering)" document located at docs/backend-step-by-step-plan.md.
+
+Quick summary of content to guide daily work:
+- Project Phases (Phase 1..7): Follow the order of deliverables for feature implementation.
+- Data Model: Strict use of UUIDs and timestamps for users, groups, lessons, questions, lesson_attempts, user_rewards, and ai_explanations.
+- API Contracts: Mandatory versioning under /v1 for roadmap, lessons/question, answer, insight/generate, ranking, and profile stats.
+- Security: Implementation of JWT, RLS (Row Level Security), rate limiting, Zod validation, and minimum auditing.
+- Data Strategy: Seed and migrations to populate Groups A/B/C/D as the initial operational base.
 
 ### Core Tech Stack
-- **Framework:** Next.js (App Router)
-- **Language:** TypeScript
-- **Database:** Prisma (PostgreSQL)
-- **Authentication:** Better Auth
-- **State Management:** Zustand (UI state only)
-- **Data Fetching:** Server Components (Primary), SWR (Client-side revalidation)
-- **Mutations:** Server Actions (Strictly no traditional API routes for internal logic)
+- Framework: Next.js (App Router)
+- Language: TypeScript
+- Database: Prisma (PostgreSQL)
+- Authentication: Better Auth
+- State Management: Zustand (UI state only)
+- Data Fetching: Server Components (Primary), SWR (Client-side revalidation)
+- Mutations: Server Actions (Strictly no traditional API routes for internal logic)
 
 ---
 
 ## Architectural Rules
 
 ### 1. Feature-Based Directory Structure
-Code is organized by business domain in `src/features/`. Each feature folder must be self-contained:
-- `src/features/[feature-name]/components/`: Feature-specific UI (e.g., `book-card.tsx`, `coach-profile.tsx`).
-- `src/features/[feature-name]/screens/`: Feature-specific UI (e.g., `books-screen.tsx`, `coachs-screen.tsx`).
-- `src/features/[feature-name]/actions/`: All mutations via `'use server'`.
-- `src/features/[feature-name]/store/`: Zustand slices for UI state (Modals, Slide-downs).
-- `src/features/[feature-name]/schemas/`: Zod schemas for validation.
-- `src/features/[feature-name]/types/`: Specific TypeScript interfaces.
+Code is organized by business domain in src/features/. Each feature folder must be self-contained:
+- src/features/[feature-name]/components/: Feature-specific UI (e.g., lesson-card.tsx, ranking-table.tsx).
+- src/features/[feature-name]/screens/: Feature-specific full screens (e.g., roadmap-screen.tsx).
+- src/features/[feature-name]/actions/: All mutations via 'use server'.
+- src/features/[feature-name]/store/: Zustand slices for UI state (Modals, Slide-downs).
+- src/features/[feature-name]/schemas/: Zod schemas for validation.
+- src/features/[feature-name]/types/: Specific TypeScript interfaces and API contracts.
 
 ### 2. Server-First Logic (KISS Principle)
-- **Server Components:** Fetch data directly via Prisma in async components. Use `cache` from React for deduping.
-- **Server Actions:** All form submissions and data changes MUST use Server Actions.
-  - Always include `'use server'`.
-  - Validate inputs with **Zod** at the start of the function.
-  - Check session via `better-auth` before proceeding with protected actions (e.g., Reviews).
-- **Zustand:** Use strictly for **UI State** (e.g., `isOrganizationChartOpen`). Do not store database entities in Zustand; let the server handle data.
+- Server Components: Fetch data directly via Prisma in async components.
+- Server Actions: All form submissions and data changes MUST use Server Actions.
+  - Always include 'use server'.
+  - Validate inputs with Zod at the start of the function.
+  - Check session via better-auth before any DB mutation.
+- Zustand: Use strictly for UI State. Do not store database entities in Zustand; let the server handle data and use SWR or Server Component revalidation for updates.
 
 ---
 
 ## Coding Standards
 
 ### Indentation & Style
-- **Indent:** 2 spaces.
-- **Naming:** PascalCase for components, camelCase for functions/variables.
-- **Simplicity:** If a task can be done with a native Next.js feature, do not install a library.
+- Indent: 2 spaces.
+- Naming: PascalCase for components, camelCase for functions/variables.
+- Complexity: Prefer native Next.js features over external libraries.
 
 ### TypeScript & Validation
-- **Strict Types:** Avoid `any`. Use Prisma-generated types or explicit interfaces.
-- **Zod Schemas:** Required for every Server Action and Form to ensure data integrity.
-- **Strings:** Use template literals for dynamic strings.
+- Strict Types: Avoid any. Use Prisma-generated types or explicit interfaces.
+- Zod Schemas: Required for every Server Action and Form to ensure data integrity.
+- LaTeX: Render math/science content using LaTeX within Markdown for questions and AI insights.
 
 ### Comments
-- Use **JSDoc** for complex business logic (e.g., "Global Config Singleton" logic).
-- Focus comments on the **"Why"** (Intent) rather than the "What."
+- Use JSDoc for complex business logic (e.g., streak calculation or reward deltas).
+- Focus comments on the "Why" (Intent) rather than the "What."
 
 ---
 
 ## Root Folders & Navigation
-- `src/app/`: App Router (Pages, Layouts). Keep logic minimal here; delegate to `features/`.
-- `src/components/ui/`: Atomic, reusable UI elements (Buttons, Inputs).
-- `src/lib/`: Shared singletons (Prisma client, Better Auth config).
-- `src/hooks/`: Global reusable hooks (e.g., `usePagination`, `useStickyNav`).
+- src/app/: App Router (Pages, Layouts). Delegate complex logic to features/.
+- src/components/ui/: Atomic, reusable UI elements (Buttons, Inputs, Cards) via Shadcn/UI or similar.
+- src/lib/: Shared singletons (Prisma client, Better Auth config, AI provider).
+- src/hooks/: Global reusable hooks (e.g., usePagination, useCountdown).
 
-### UI/UX Interfaces & Reuse of Feature Organization
-
-- Reuse the existing feature-based organization when adding UI/UX interfaces: keep domain-specific UI inside `features/[feature-name]/components/` and screens inside `features/[feature-name]/screens/` so design and behaviour remain co-located with business logic.
-- Shared, atomic UI primitives (Buttons, Inputs, Icons, Form controls, Modals) should live in `src/components/ui/` and be framework-agnostic (styling tokens only) so they can be reused across features and the `app/` layer.
-- Store types and UI contracts for components close to the feature: `features/[feature-name]/types/` should expose interfaces for props and small UI contracts used by screens and components. Use these types in server components to keep strict typing across server/client boundary.
-- UX specs, small wireframes and component usage guidelines should be kept in `docs/ui/` or `docs/features/[feature-name]/ui.md` (lightweight markdown) — include example screenshots, expected responsive behaviour and accessibility notes.
-- Design tokens (colors, spacing, typography) should be centralized in `src/styles/tokens.ts` or `src/styles/variables.css` and consumed by `src/components/ui/` primitives to ensure consistent theming across features.
-- For admin interfaces or alternate flows, create parallel screen folders under `app/admin/` and follow the same conventions: server components for data-fetching lists and client components for forms/modals that call server actions.
-- Accessibility & internationalization: include brief guidance in each feature's `README.md` (e.g., `features/questions/README.md`) about aria roles, keyboard interactions and text keys for translations. Prefer simple, semantic HTML and ensure components expose aria-friendly props.
-- When implementing interactive flows, prefer Server Components for lists and data fetching, and Client Components only for interactive controls, forms or local UI state (Zustand remains UI-only).
-
-These guidelines ensure UI/UX artifacts are discoverable, consistently implemented and easy to reuse across the project while preserving the feature-based architecture.
+### UI/UX Interfaces & Reuse
+- Shared Primitives: Atomic UI components live in src/components/ui/ and are framework-agnostic.
+- Design Tokens: Centralized in src/styles/tokens.ts (colors, spacing, typography).
+- UX Specs: Lightweight markdown in docs/features/[feature-name]/ui.md for responsive behavior and accessibility notes.
+- Admin Flow: Use parallel folders under app/admin/ following the same feature-based logic for management interfaces.
 
 ---
 
 ## Operational Workflows
 
 ### Finding Related Code
-- Search `src/features/` by domain (e.g., "Literary Hub" -> `features/library`).
-- Check `prisma/schema.prisma` for data structures.
+- Search src/features/ by domain (e.g., "AI Explanation" -> features/ai-insight).
+- Check prisma/schema.prisma for the source of truth on data structures.
 
 ### Validation Steps
-1. **Type Check:** `tsc --noEmit`.
-2. **Auth Check:** Verify `auth.getSession()` is called in any action modifying the DB.
-3. **SEO Check:** Ensure `generateMetadata` is used for dynamic routes (Books, Coaches).
+1. Type Check: tsc --noEmit.
+2. Security Check: Verify RLS policies and auth.getSession() in Server Actions.
+3. AI Fallback: Ensure explanation_base is used if the AI provider fails.
+4. Consistency: Ensure pagination logic is consistent across Ranking and History features as per project history.
