@@ -2,12 +2,15 @@ import { CreateCourseSchema } from '@/features/courses/dtos/create-course.dto';
 import { ApiResponse } from '@/shared/response/api-response';
 import { CourseService } from '@/features/courses/services/course-services';
 import { isPrismaError } from '@/shared/utils/error-handler';
+import { requireAdminOrThrow } from '@/libs/admin';
 import { NextRequest } from 'next/server';
 import { parseQueryParams } from '@/shared/utils/query-parser';
 import { PaginationSchema } from '@/shared/dtos/pagination.dto';
 
 export async function POST(request: Request) {
   try {
+    const unauthorized = requireAdminOrThrow(request);
+    if (unauthorized) return unauthorized;
     const body = await request.json();
     const result = CreateCourseSchema.safeParse(body);
 

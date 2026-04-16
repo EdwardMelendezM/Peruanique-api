@@ -6,9 +6,12 @@ import { NextRequest } from 'next/server';
 import { parseQueryParams } from '@/shared/utils/query-parser';
 import { PaginationSchema } from '@/shared/dtos/pagination.dto';
 import { PaginationDTO } from '@/shared/dtos/pagination.dto';
+import { requireAdminOrThrow } from '@/libs/admin';
 
 export async function POST(request: Request) {
   try {
+    const unauthorized = requireAdminOrThrow(request);
+    if (unauthorized) return unauthorized;
     const body = await request.json();
     const result = CreateRoadmapNodeSchema.safeParse(body);
 

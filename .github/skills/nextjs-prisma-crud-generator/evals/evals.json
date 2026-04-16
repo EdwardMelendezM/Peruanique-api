@@ -1,0 +1,13 @@
+{
+  "evaluations": [
+    {
+      "id": "gen-member-crud",
+      "prompt": "Genera el CRUD para el modelo Member (Directiva/Coaches) revalidando la ruta /directiva",
+      "assertions": [
+        { "type": "file_exists", "path": "lib/actions/member.ts" },
+        { "type": "contains_text", "text": "revalidatePath('/directiva')" },
+        { "type": "contains_text", "text": "db.member.create" }
+      ]
+    }
+  ]
+}

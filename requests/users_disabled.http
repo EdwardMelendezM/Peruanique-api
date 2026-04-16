@@ -1,0 +1,7 @@
+### List disabled users (no auth)
+GET http://localhost:3000/api/v1/users/disabled
+Accept: application/json
+
+# Example curl
+# curl -i http://localhost:3000/api/v1/users/disabled
+

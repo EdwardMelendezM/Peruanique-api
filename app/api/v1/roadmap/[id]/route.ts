@@ -22,6 +22,8 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   try {
+    const unauthorized = (await import('@/libs/admin')).requireAdminOrThrow(request);
+    if (unauthorized) return unauthorized;
     const { id } = params;
     const body = await request.json();
     const result = UpdateRoadmapNodeSchema.safeParse(body);
@@ -53,6 +55,8 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   try {
+    const unauthorized = (await import('@/libs/admin')).requireAdminOrThrow(request);
+    if (unauthorized) return unauthorized;
     const { id } = params;
     await RoadmapNodeService.deleteRoadmapNode(id);
 

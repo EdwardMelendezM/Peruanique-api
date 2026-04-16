@@ -1,0 +1,12 @@
+@baseUrl = http://localhost:3000/api/v1
+@contentType = application/json
+@attemptId =
+
+### Generar insight para un intento
+POST {{baseUrl}}/insight/generate
+Content-Type: {{contentType}}
+
+{
+  "attemptId": "{{attemptId}}"
+}
+

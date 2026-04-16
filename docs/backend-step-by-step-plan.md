@@ -297,7 +297,12 @@ Entregable: backend levantado con auth y DB inicial.
 - [ ] Integrar las acciones y las interfaces para permitir a los administradores configurar el flujo de cada grupo.
 - [ ] Crear un proceso de seed inicial para poblar los grupos A/B/C/D con lecciones y preguntas base.
 
-## Fase 6: Calidad y operacion
+## Fase 6: Pages to manage as admin
+- [ ] Crear los server actions para crear/modificar grupos, lecciones, preguntas y opciones como administrador.
+- [ ] Crear the pages.tsx, screens with components para grupos, lecciones, preguntas y opciones en el dashboard de administración.
+
+
+## Fase 7: Calidad y operacion
 
 - [ ] Pruebas unitarias (reglas de score y streak).
 - [ ] Pruebas de integracion (answer flow completo).

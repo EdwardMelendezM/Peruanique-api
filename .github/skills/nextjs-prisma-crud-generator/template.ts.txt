@@ -1,0 +1,66 @@
+import { db } from "@/lib/db";
+import { revalidatePath } from "next/cache";
+import { Prisma } from "@prisma/client";
+
+// Estandarización de respuesta
+export type ActionResponse<T> = {
+  success: boolean;
+  data?: T;
+  error?: string;
+};
+
+/**
+ * Operaciones CRUD para el modelo {{modelName}}
+ */
+
+export async function create{{modelName}}(
+  data: Prisma.{{modelName}}CreateInput
+): Promise<ActionResponse<Prisma.{{modelName}}GetPayload<{}>>> {
+  try {
+    const result = await db.{{modelNameLower}}.create({ data });
+    revalidatePath("{{revalidatePath}}");
+    return { success: true, data: result };
+  } catch (error) {
+    console.error(`[CREATE_{{modelName}}_ERROR]:`, error);
+    return { success: false, error: "Error al crear el registro." };
+  }
+}
+
+export async function get{{modelName}}s(
+  params?: Prisma.{{modelName}}FindManyArgs
+) {
+  try {
+    return await db.{{modelNameLower}}.findMany(params);
+  } catch (error) {
+    console.error(`[GET_{{modelName}}S_ERROR]:`, error);
+    throw new Error("Error al obtener los datos.");
+  }
+}
+
+export async function update{{modelName}}(
+  id: string,
+  data: Prisma.{{modelName}}UpdateInput
+): Promise<ActionResponse<Prisma.{{modelName}}GetPayload<{}>>> {
+  try {
+    const result = await db.{{modelNameLower}}.update({
+      where: { id },
+      data,
+    });
+    revalidatePath("{{revalidatePath}}");
+    return { success: true, data: result };
+  } catch (error) {
+    console.error(`[UPDATE_{{modelName}}_ERROR]:`, error);
+    return { success: false, error: "Error al actualizar el registro." };
+  }
+}
+
+export async function delete{{modelName}}(id: string): Promise<ActionResponse<void>> {
+  try {
+    await db.{{modelNameLower}}.delete({ where: { id } });
+    revalidatePath("{{revalidatePath}}");
+    return { success: true };
+  } catch (error) {
+    console.error(`[DELETE_{{modelName}}_ERROR]:`, error);
+    return { success: false, error: "Error al eliminar el registro." };
+  }
+}

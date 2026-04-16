@@ -1,0 +1,23 @@
+{
+  "name": "nextjs-prisma-crud-generator",
+  "description": "Generates a standardized CRUD Server Action file for a specific Prisma model.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "modelName": {
+        "type": "string",
+        "description": "PascalCase name of the model in schema.prisma (e.g., 'Book')."
+      },
+      "revalidatePath": {
+        "type": "string",
+        "description": "The Next.js route to revalidate after mutations (e.g., '/lectura')."
+      },
+      "useTransitions": {
+        "type": "boolean",
+        "description": "Whether to optimize the output for useTransition hooks.",
+        "default": true
+      }
+    },
+    "required": ["modelName", "revalidatePath"]
+  }
+}

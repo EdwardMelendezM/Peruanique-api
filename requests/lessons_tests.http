@@ -1,0 +1,21 @@
+@baseUrl = http://localhost:3000/api/v1
+@contentType = application/json
+@userId =
+@lessonId =
+@questionId =
+
+### Obtener siguiente pregunta de una lección
+GET {{baseUrl}}/lessons/{{lessonId}}/question?userId={{userId}}
+Accept: {{contentType}}
+
+### Enviar respuesta a una pregunta
+POST {{baseUrl}}/lessons/{{lessonId}}/answer
+Content-Type: {{contentType}}
+
+{
+  "userId": "{{userId}}",
+  "questionId": "{{questionId}}",
+  "selectedOptionId": "",
+  "timeSpentSeconds": 12
+}
+

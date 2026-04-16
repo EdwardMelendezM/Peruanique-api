@@ -1,0 +1,24 @@
+{
+  "name": "nextjs-sodu-interface-generator",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "modelName": { "type": "string" },
+      "redirectPath": { "type": "string", "description": "Ruta a la que redirigir tras el éxito." },
+      "fields": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "label": { "type": "string" },
+            "placeholder": { "type": "string" },
+            "type": { "type": "string", "default": "text" },
+            "icon": { "type": "string", "description": "Nombre del icono de Lucide (ej: 'User', 'Mail')." }
+          }
+        }
+      }
+    },
+    "required": ["modelName", "fields"]
+  }
+}

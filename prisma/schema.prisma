@@ -41,6 +41,9 @@ model User {
   full_name          String
   image              String?        // Para la foto de perfil de Google/FB
 
+  // Estado de usuario
+  is_disabled        Boolean        @default(false)
+
   // Campos de Gamificación FIJA
   birthday           DateTime?
   daily_goal_minutes Int            @default(15)
@@ -56,6 +59,9 @@ model User {
   profile            UserProfile?
   progress           UserProgress[]
   schedules          DailySchedule[]
+  // Intentos y eventos
+  lessonAttempts     LessonAttempt[]
+  rewardEvents       RewardEvent[]
 
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
@@ -139,6 +145,7 @@ model RoadmapNode {
 
   questions        Question[]
   user_progress    UserProgress[]
+  lesson_attempts  LessonAttempt[]
 
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
@@ -156,6 +163,7 @@ model Question {
   question_type    QuestionType @default(MULTIPLE_CHOICE)
 
   answers          Answer[]
+  lesson_attempts  LessonAttempt[]
 
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
@@ -170,6 +178,7 @@ model Answer {
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  selected_in_attempts LessonAttempt[] @relation("SelectedAnswerRelation")
 }
 
 model UserProgress {
@@ -197,3 +206,47 @@ model DailySchedule {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
+
+model LessonAttempt {
+  id                 String    @id @default(uuid()) @db.Uuid
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId             String    @db.Uuid
+  node               RoadmapNode? @relation(fields: [nodeId], references: [id])
+  nodeId             String?   @db.Uuid
+  question           Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId         String    @db.Uuid
+  selectedAnswer     Answer?   @relation("SelectedAnswerRelation", fields: [selectedAnswerId], references: [id])
+  selectedAnswerId   String?   @db.Uuid
+  is_correct         Boolean   @default(false)
+  time_spent_seconds Int?
+  answered_at        DateTime  @default(now())
+
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  ai_explanations    AiExplanation[]
+}
+
+model RewardEvent {
+  id          String   @id @default(uuid()) @db.Uuid
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String   @db.Uuid
+  type        String
+  points_delta Int
+  coins_delta  Int
+  meta        Json?
+  createdAt   DateTime @default(now())
+}
+
+model AiExplanation {
+  id           String   @id @default(uuid()) @db.Uuid
+  attempt      LessonAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  attemptId    String   @db.Uuid
+  provider     String
+  model        String
+  input_tokens Int?
+  output_tokens Int?
+  latency_ms   Int?
+  content      Json
+  createdAt    DateTime @default(now())
+}
+
