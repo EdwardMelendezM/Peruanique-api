@@ -1,4 +1,4 @@
-import { prisma } from '@/libs/prisma';
+import { prisma } from '@/lib/prisma';
 import type { Prisma } from '@/app/generated/prisma/client';
 import { CreateUserDTO } from '@/features/users/dtos/create-user.dto';
 import {PaginationDTO} from "@/shared/dtos/pagination.dto";

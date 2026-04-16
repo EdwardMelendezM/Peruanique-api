@@ -1,4 +1,4 @@
-import { prisma } from '@/libs/prisma';
+import { prisma } from '@/lib/prisma';
 import type { GenerateInsightDTO } from '@/features/insight/dtos/generate-insight.dto';
 import type { Prisma } from '@/app/generated/prisma/client';
 

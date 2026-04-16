@@ -2,12 +2,12 @@ import { PrismaClient } from '@/app/generated/prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 
 const globalForPrisma = globalThis as unknown as {
-    prisma: PrismaClient | undefined
+  prisma: PrismaClient | undefined
 }
 
 // Adapter with postgres adapter
 const adapter = new PrismaPg({
-    connectionString: process.env.DATABASE_URL,
+  connectionString: process.env.DATABASE_URL,
 })
 
 // Prisma client instance

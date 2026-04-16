@@ -1,4 +1,4 @@
-import { prisma } from '@/libs/prisma';
+import { prisma } from '@/lib/prisma';
 import { RoadmapNodeService } from '@/features/roadmap-nodes/services/roadmap-node-services';
 import type { Prisma } from '@/app/generated/prisma/client';
 

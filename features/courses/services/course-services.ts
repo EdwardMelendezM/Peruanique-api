@@ -1,4 +1,4 @@
-import { prisma } from '@/libs/prisma';
+import { prisma } from '@/lib/prisma';
 import { CreateCourseDTO } from '@/features/courses/dtos/create-course.dto';
 import { UpdateCourseDTO } from '@/features/courses/dtos/update-course.dto';
 import { PaginationDTO } from '@/shared/dtos/pagination.dto';

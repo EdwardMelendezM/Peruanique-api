@@ -1,11 +1,13 @@
-import { z } from 'zod';
+import { z } from 'zod'
 
 export const CreateAnswerSchema = z.object({
-  questionId: z.string().uuid('El questionId debe ser un UUID'),
-  answer_text: z.string().min(1, 'El texto de la respuesta es requerido'),
-  is_correct: z.boolean().optional(),
-});
+  questionId: z.string()
+    .uuid('El questionId debe ser un UUID válido'),
+  answer_text: z.string()
+    .min(1, 'La respuesta es requerida')
+    .max(500, 'La respuesta no puede exceder 500 caracteres'),
+  is_correct: z.boolean()
+    .default(false),
+})
 
-export type CreateAnswerDTO = z.infer<typeof CreateAnswerSchema>;
-
-export default CreateAnswerSchema;
+export type CreateAnswerDTO = z.infer<typeof CreateAnswerSchema>

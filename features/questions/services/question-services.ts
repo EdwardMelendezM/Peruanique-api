@@ -1,4 +1,4 @@
-import { prisma } from '@/libs/prisma';
+import { prisma } from '@/lib/prisma';
 import { CreateQuestionDTO } from '@/features/questions/dtos/create-question.dto';
 import { UpdateQuestionDTO } from '@/features/questions/dtos/update-question.dto';
 import { PaginationDTO } from '@/shared/dtos/pagination.dto';

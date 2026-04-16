@@ -34,44 +34,46 @@ enum ProgressStatus {
 // --- Modelos ---
 
 model User {
-  id                 String         @id @default(uuid()) @db.Uuid
-  email              String         @unique
-  emailVerified      Boolean        @default(false)
-  password           String?        // Opcional si solo usas OAuth
-  full_name          String
-  image              String?        // Para la foto de perfil de Google/FB
+  id            String  @id @default(uuid())
+  email         String  @unique
+  emailVerified Boolean @default(false)
+  password      String? // Opcional si solo usas OAuth
+  full_name     String
+  name          String? // Para el nombre de usuario o nombre corto
+  image         String? // Para la foto de perfil de Google/FB
 
   // Estado de usuario
-  is_disabled        Boolean        @default(false)
+  is_disabled Boolean @default(false)
 
   // Campos de Gamificación FIJA
   birthday           DateTime?
-  daily_goal_minutes Int            @default(15)
-  total_xp           Int            @default(0)
-  streak_days        Int            @default(0)
-  current_energy     Int            @default(5)
+  daily_goal_minutes Int       @default(15)
+  total_xp           Int       @default(0)
+  streak_days        Int       @default(0)
+  current_energy     Int       @default(5)
 
   // Relaciones de Auth
-  sessions           Session[]
-  accounts           Account[]
+  sessions Session[]
+  accounts Account[]
 
   // Relaciones de App
-  profile            UserProfile?
-  progress           UserProgress[]
-  schedules          DailySchedule[]
+  profile        UserProfile?
+  progress       UserProgress[]
+  schedules      DailySchedule[]
   // Intentos y eventos
-  lessonAttempts     LessonAttempt[]
-  rewardEvents       RewardEvent[]
+  lessonAttempts LessonAttempt[]
+  rewardEvents   RewardEvent[]
 
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([total_xp(sort: Desc)])
+  @@map("users")
 }
 
 model Session {
-  id        String   @id @default(uuid()) @db.Uuid
-  userId    String   @db.Uuid
+  id        String   @id @default(uuid())
+  userId    String
   token     String   @unique
   expiresAt DateTime
   ipAddress String?
@@ -80,11 +82,13 @@ model Session {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("sessions")
 }
 
 model Account {
-  id                    String    @id @default(uuid()) @db.Uuid
-  userId                String    @db.Uuid
+  id                    String    @id @default(uuid())
+  userId                String
   accountId             String
   providerId            String
   accessToken           String?   @db.Text
@@ -96,157 +100,178 @@ model Account {
   password              String?
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("accounts")
 }
 
 model Verification {
-  id         String    @id @default(uuid()) @db.Uuid
+  id         String   @id @default(uuid())
   identifier String
   value      String
   expiresAt  DateTime
 
-  createdAt  DateTime? @default(now())
-  updatedAt  DateTime? @updatedAt
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@map("verifications")
 }
 
 model UserProfile {
-  id                String   @id @default(uuid()) @db.Uuid
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId            String   @unique @db.Uuid
-  target_university String   // Ej: UNMSM, UNI
-  target_major      String   // Carrera
-  current_level_tag String   @default("novato")
+  id                String @id @default(uuid())
+  user              User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String @unique
+  target_university String
+  target_major      String
+  current_level_tag String @default("novato")
 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user_profiles")
 }
 
 model Course {
-  id          String         @id @default(uuid()) @db.Uuid
-  name        String         // Ej: Ciencias, Letras
+  id          String  @id @default(uuid())
+  name        String
   color_theme String?
   icon_url    String?
 
-  nodes       RoadmapNode[]
+  nodes RoadmapNode[]
 
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("courses")
 }
 
 model RoadmapNode {
-  id               String         @id @default(uuid()) @db.Uuid
-  course           Course         @relation(fields: [courseId], references: [id])
-  courseId         String         @db.Uuid
+  id               String     @id @default(uuid())
+  course           Course     @relation(fields: [courseId], references: [id])
+  courseId         String
   title            String
-  order_index      Int            // Para manejar la secuencia tipo Duolingo
-  difficulty_level Difficulty     @default(BEGINNER)
-  is_boss_level    Boolean        @default(false)
+  order_index      Int
+  difficulty_level Difficulty @default(BEGINNER)
+  is_boss_level    Boolean    @default(false)
 
-  questions        Question[]
-  user_progress    UserProgress[]
-  lesson_attempts  LessonAttempt[]
+  questions       Question[]
+  user_progress   UserProgress[]
+  lesson_attempts LessonAttempt[]
 
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@unique([courseId, order_index]) // Evita duplicidad de orden en un curso
+  @@unique([courseId, order_index])
+  @@map("roadmap_nodes")
 }
 
 model Question {
-  id               String       @id @default(uuid()) @db.Uuid
+  id               String       @id @default(uuid())
   node             RoadmapNode  @relation(fields: [nodeId], references: [id])
-  nodeId           String       @db.Uuid
+  nodeId           String
   question_text    String       @db.Text
-  explanation_text String?      @db.Text // El "por qué" profesional
+  explanation_text String?      @db.Text
   difficulty       Difficulty   @default(BEGINNER)
   question_type    QuestionType @default(MULTIPLE_CHOICE)
 
-  answers          Answer[]
-  lesson_attempts  LessonAttempt[]
+  answers         Answer[]
+  lesson_attempts LessonAttempt[]
 
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("questions")
 }
 
 model Answer {
-  id          String   @id @default(uuid()) @db.Uuid
+  id          String   @id @default(uuid())
   question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  questionId  String   @db.Uuid
+  questionId  String
   answer_text String   @db.Text
   is_correct  Boolean  @default(false)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
   selected_in_attempts LessonAttempt[] @relation("SelectedAnswerRelation")
+
+  @@map("answers")
 }
 
 model UserProgress {
-  id             String         @id @default(uuid()) @db.Uuid
+  id             String         @id @default(uuid())
   user           User           @relation(fields: [userId], references: [id])
-  userId         String         @db.Uuid
+  userId         String
   node           RoadmapNode    @relation(fields: [nodeId], references: [id])
-  nodeId         String         @db.Uuid
+  nodeId         String
   status         ProgressStatus @default(LOCKED)
   score_obtained Int            @default(0)
 
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@unique([userId, nodeId]) // Un registro de progreso por usuario/nodo
+  @@unique([userId, nodeId])
+  @@map("user_progress")
 }
 
 model DailySchedule {
-  id             String   @id @default(uuid()) @db.Uuid
+  id             String   @id @default(uuid())
   user           User     @relation(fields: [userId], references: [id])
-  userId         String   @db.Uuid
-  preferred_hour DateTime @db.Time
-  days_of_week   Int[]    // Array de 0-6 (Domingo a Sábado)
+  userId         String
+  preferred_hour DateTime
+  days_of_week   Int[]
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("daily_schedules")
 }
 
 model LessonAttempt {
-  id                 String    @id @default(uuid()) @db.Uuid
-  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId             String    @db.Uuid
+  id                 String       @id @default(uuid())
+  user               User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId             String
   node               RoadmapNode? @relation(fields: [nodeId], references: [id])
-  nodeId             String?   @db.Uuid
-  question           Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  questionId         String    @db.Uuid
-  selectedAnswer     Answer?   @relation("SelectedAnswerRelation", fields: [selectedAnswerId], references: [id])
-  selectedAnswerId   String?   @db.Uuid
-  is_correct         Boolean   @default(false)
+  nodeId             String?
+  question           Question     @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId         String
+  selectedAnswer     Answer?      @relation("SelectedAnswerRelation", fields: [selectedAnswerId], references: [id])
+  selectedAnswerId   String?
+  is_correct         Boolean      @default(false)
   time_spent_seconds Int?
-  answered_at        DateTime  @default(now())
+  answered_at        DateTime     @default(now())
 
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
-  ai_explanations    AiExplanation[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  ai_explanations AiExplanation[]
+
+  @@map("lesson_attempts")
 }
 
 model RewardEvent {
-  id          String   @id @default(uuid()) @db.Uuid
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      String   @db.Uuid
-  type        String
+  id           String   @id @default(uuid())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  type         String
   points_delta Int
   coins_delta  Int
-  meta        Json?
-  createdAt   DateTime @default(now())
+  meta         Json?
+  createdAt    DateTime @default(now())
+
+  @@map("reward_events")
 }
 
 model AiExplanation {
-  id           String   @id @default(uuid()) @db.Uuid
-  attempt      LessonAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
-  attemptId    String   @db.Uuid
-  provider     String
-  model        String
-  input_tokens Int?
+  id            String        @id @default(uuid())
+  attempt       LessonAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  attemptId     String
+  provider      String
+  model         String
+  input_tokens  Int?
   output_tokens Int?
-  latency_ms   Int?
-  content      Json
-  createdAt    DateTime @default(now())
-}
+  latency_ms    Int?
+  content       Json
+  createdAt     DateTime      @default(now())
 
+  @@map("ai_explanations")
+}

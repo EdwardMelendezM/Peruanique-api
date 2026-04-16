@@ -35,7 +35,7 @@ npx prisma migrate dev --name add_some_feature
 3. Prisma client is generated into `app/generated/prisma` (see `generator` block in `schema.prisma`). Import it via:
 
 ```ts
-import { prisma } from '@/libs/prisma';
+import { prisma } from '@/lib/prisma';
 // or the generated client directly if needed
 import { PrismaClient } from '@/app/generated/prisma/client';
 ```
