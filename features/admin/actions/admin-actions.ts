@@ -1,15 +1,21 @@
+'use server'
+
 import { headers } from 'next/headers'
-import { prisma } from '@/libs/prisma'
-import { requireAdminOrThrow } from '@/libs/admin'
+import { prisma } from '@/lib/prisma'
 import type { Difficulty, QuestionType } from '@/app/generated/prisma/client'
+import {getCurrentUser} from "@/lib/get-user";
 
 // Server actions for admin management. Each action expects a FormData (used from server components forms)
 
 export async function createCourse(formData: FormData) {
-  'use server'
-  const req = new Request('http://localhost', { headers: headers() as unknown as Headers })
-  const maybeErr = requireAdminOrThrow(req)
-  if (maybeErr) throw new Error('Unauthorized')
+
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    return {
+      status: 404,
+      error: "User not found",
+    }
+  }
 
   const name = formData.get('name')?.toString() || ''
   const color_theme = formData.get('color_theme')?.toString() || null
@@ -20,10 +26,13 @@ export async function createCourse(formData: FormData) {
 }
 
 export async function updateCourse(formData: FormData) {
-  'use server'
-  const req = new Request('http://localhost', { headers: headers() as unknown as Headers })
-  const maybeErr = requireAdminOrThrow(req)
-  if (maybeErr) throw new Error('Unauthorized')
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    return {
+      status: 404,
+      error: "User not found",
+    }
+  }
 
   const id = formData.get('id')?.toString()
   if (!id) throw new Error('Missing id')
@@ -37,10 +46,13 @@ export async function updateCourse(formData: FormData) {
 }
 
 export async function deleteCourse(formData: FormData) {
-  'use server'
-  const req = new Request('http://localhost', { headers: headers() as unknown as Headers })
-  const maybeErr = requireAdminOrThrow(req)
-  if (maybeErr) throw new Error('Unauthorized')
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    return {
+      status: 404,
+      error: "User not found",
+    }
+  }
 
   const id = formData.get('id')?.toString()
   if (!id) throw new Error('Missing id')
@@ -51,10 +63,13 @@ export async function deleteCourse(formData: FormData) {
 
 // Nodes (RoadmapNode)
 export async function createNode(formData: FormData) {
-  'use server'
-  const req = new Request('http://localhost', { headers: headers() as unknown as Headers })
-  const maybeErr = requireAdminOrThrow(req)
-  if (maybeErr) throw new Error('Unauthorized')
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    return {
+      status: 404,
+      error: "User not found",
+    }
+  }
 
   const courseId = formData.get('courseId')?.toString()
   const title = formData.get('title')?.toString() || ''
@@ -69,10 +84,13 @@ export async function createNode(formData: FormData) {
 }
 
 export async function updateNode(formData: FormData) {
-  'use server'
-  const req = new Request('http://localhost', { headers: headers() as unknown as Headers })
-  const maybeErr = requireAdminOrThrow(req)
-  if (maybeErr) throw new Error('Unauthorized')
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    return {
+      status: 404,
+      error: "User not found",
+    }
+  }
 
   const id = formData.get('id')?.toString()
   if (!id) throw new Error('Missing id')
@@ -87,10 +105,13 @@ export async function updateNode(formData: FormData) {
 }
 
 export async function deleteNode(formData: FormData) {
-  'use server'
-  const req = new Request('http://localhost', { headers: headers() as unknown as Headers })
-  const maybeErr = requireAdminOrThrow(req)
-  if (maybeErr) throw new Error('Unauthorized')
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    return {
+      status: 404,
+      error: "User not found",
+    }
+  }
 
   const id = formData.get('id')?.toString()
   if (!id) throw new Error('Missing id')
@@ -101,10 +122,13 @@ export async function deleteNode(formData: FormData) {
 
 // Questions
 export async function createQuestion(formData: FormData) {
-  'use server'
-  const req = new Request('http://localhost', { headers: headers() as unknown as Headers })
-  const maybeErr = requireAdminOrThrow(req)
-  if (maybeErr) throw new Error('Unauthorized')
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    return {
+      status: 404,
+      error: "User not found",
+    }
+  }
 
   const nodeId = formData.get('nodeId')?.toString()
   const question_text = formData.get('question_text')?.toString() || ''
@@ -119,11 +143,13 @@ export async function createQuestion(formData: FormData) {
 }
 
 export async function updateQuestion(formData: FormData) {
-  'use server'
-  const req = new Request('http://localhost', { headers: headers() as unknown as Headers })
-  const maybeErr = requireAdminOrThrow(req)
-  if (maybeErr) throw new Error('Unauthorized')
-
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    return {
+      status: 404,
+      error: "User not found",
+    }
+  }
   const id = formData.get('id')?.toString()
   if (!id) throw new Error('Missing id')
   const data: Record<string, unknown> = {}
@@ -137,10 +163,13 @@ export async function updateQuestion(formData: FormData) {
 }
 
 export async function deleteQuestion(formData: FormData) {
-  'use server'
-  const req = new Request('http://localhost', { headers: headers() as unknown as Headers })
-  const maybeErr = requireAdminOrThrow(req)
-  if (maybeErr) throw new Error('Unauthorized')
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    return {
+      status: 404,
+      error: "User not found",
+    }
+  }
 
   const id = formData.get('id')?.toString()
   if (!id) throw new Error('Missing id')
@@ -151,10 +180,13 @@ export async function deleteQuestion(formData: FormData) {
 
 // Answers
 export async function createAnswer(formData: FormData) {
-  'use server'
-  const req = new Request('http://localhost', { headers: headers() as unknown as Headers })
-  const maybeErr = requireAdminOrThrow(req)
-  if (maybeErr) throw new Error('Unauthorized')
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    return {
+      status: 404,
+      error: "User not found",
+    }
+  }
 
   const questionId = formData.get('questionId')?.toString()
   const answer_text = formData.get('answer_text')?.toString() || ''
@@ -167,10 +199,13 @@ export async function createAnswer(formData: FormData) {
 }
 
 export async function updateAnswer(formData: FormData) {
-  'use server'
-  const req = new Request('http://localhost', { headers: headers() as unknown as Headers })
-  const maybeErr = requireAdminOrThrow(req)
-  if (maybeErr) throw new Error('Unauthorized')
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    return {
+      status: 404,
+      error: "User not found",
+    }
+  }
 
   const id = formData.get('id')?.toString()
   if (!id) throw new Error('Missing id')
@@ -183,10 +218,13 @@ export async function updateAnswer(formData: FormData) {
 }
 
 export async function deleteAnswer(formData: FormData) {
-  'use server'
-  const req = new Request('http://localhost', { headers: headers() as unknown as Headers })
-  const maybeErr = requireAdminOrThrow(req)
-  if (maybeErr) throw new Error('Unauthorized')
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    return {
+      status: 404,
+      error: "User not found",
+    }
+  }
 
   const id = formData.get('id')?.toString()
   if (!id) throw new Error('Missing id')
@@ -197,62 +235,50 @@ export async function deleteAnswer(formData: FormData) {
 
 // Thin wrappers that explicitly return Promise<void> so they can be safely used as form actions
 export async function createCourseAction(formData: FormData): Promise<void> {
-  'use server'
   await createCourse(formData)
 }
 
 export async function updateCourseAction(formData: FormData): Promise<void> {
-  'use server'
   await updateCourse(formData)
 }
 
 export async function deleteCourseAction(formData: FormData): Promise<void> {
-  'use server'
   await deleteCourse(formData)
 }
 
 export async function createNodeAction(formData: FormData): Promise<void> {
-  'use server'
   await createNode(formData)
 }
 
 export async function updateNodeAction(formData: FormData): Promise<void> {
-  'use server'
   await updateNode(formData)
 }
 
 export async function deleteNodeAction(formData: FormData): Promise<void> {
-  'use server'
   await deleteNode(formData)
 }
 
 export async function createQuestionAction(formData: FormData): Promise<void> {
-  'use server'
   await createQuestion(formData)
 }
 
 export async function updateQuestionAction(formData: FormData): Promise<void> {
-  'use server'
   await updateQuestion(formData)
 }
 
 export async function deleteQuestionAction(formData: FormData): Promise<void> {
-  'use server'
   await deleteQuestion(formData)
 }
 
 export async function createAnswerAction(formData: FormData): Promise<void> {
-  'use server'
   await createAnswer(formData)
 }
 
 export async function updateAnswerAction(formData: FormData): Promise<void> {
-  'use server'
   await updateAnswer(formData)
 }
 
 export async function deleteAnswerAction(formData: FormData): Promise<void> {
-  'use server'
   await deleteAnswer(formData)
 }
 
